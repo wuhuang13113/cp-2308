@@ -33,7 +33,9 @@ export default {
       formData: {
         username: 'demo',
         password: 'Hmzs%001',
-        remember: ''
+        remember: ''   
+
+        
       },
       rules: {
         username: [
