@@ -1,4 +1,6 @@
 import axios from 'axios'
+import {getToken} from '@/utils/auth'
+
 const service = axios.create({
   baseURL: 'https://api-hmzs.itheima.net/tj',
   timeout: 5000 // request timeout
@@ -7,6 +9,11 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   config => {
+    // 设置请求头
+    const token = getToken()
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
     return config
   },
   error => {

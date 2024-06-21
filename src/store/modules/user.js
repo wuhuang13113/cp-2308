@@ -1,12 +1,17 @@
 import {loginAPI} from '@/apis/user'
+import {setToken,getToken} from '@/utils/auth'
+
 export default {
   namespaced: true,
   state: {
-    token:'',
+    token:getToken() || '',
   },
   mutations: {
     setToken(state,token){
+      //vuex存token
       state.token=token
+      //本地存token
+      setToken(token)
     }
   },
   actions: {

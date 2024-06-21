@@ -66,7 +66,10 @@ export default {
       //   }
       // })
       await this.$refs.form.validate()
+      //触发action的方法
       this.$store.dispatch('user/login',this.formData)
+      //跳转
+      this.$router.push('/')
     }
     
   }
