@@ -1,5 +1,5 @@
 import {loginAPI} from '@/apis/user'
-import {setToken,getToken} from '@/utils/auth'
+import {setToken,getToken, removeToken} from '@/utils/auth'
 
 export default {
   namespaced: true,
@@ -12,6 +12,10 @@ export default {
       state.token=token
       //本地存token
       setToken(token)
+    },
+    removeToken(state){
+      state.token=''
+      removeToken()
     }
   },
   actions: {

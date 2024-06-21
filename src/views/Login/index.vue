@@ -12,8 +12,8 @@
           <el-input v-model="formData.password" />
         </el-form-item>
 
-        <el-form-item prop="remember" v-model="formData.remember">
-          <el-checkbox>记住我</el-checkbox>
+        <el-form-item prop="remember">
+          <el-checkbox  v-model="formData.remember">记住我</el-checkbox>
         </el-form-item>
 
         <el-form-item>
@@ -25,13 +25,13 @@
 </template>
 
 <script>
-
+import { FORMDATA_KEY } from '@/constants/KEY'
 export default {
   name: 'Login',
   data() {
     return {
       formData: {
-        username: 'demo',
+        username: '',
         password: 'Hmzs%001',
         remember: ''   
 
@@ -58,6 +58,13 @@ export default {
       }
     }
   },
+  created(){
+    //判断本地存储是否有数据
+    const formData = localStorage.getItem(FORMDATA_KEY)
+    if(formData){
+      this.formData = JSON.parse(formData)
+    }
+  },
   methods: {
     async doLogin() {
       // this.$refs.form.validate((isOk) => {
@@ -68,8 +75,14 @@ export default {
       await this.$refs.form.validate()
       //触发action的方法
       this.$store.dispatch('user/login',this.formData)
-      //跳转
-      this.$router.push('/')
+      //记住我功能
+      if (this.formData.remember) {
+        localStorage.setItem(FORMDATA_KEY,JSON.stringify(this.formData))
+      } else {
+        localStorage.removeItem(FORMDATA_KEY)
+      }
+       //跳转
+       this.$router.push('/workbench')
     }
     
   }

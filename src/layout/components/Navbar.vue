@@ -23,11 +23,16 @@
 </template>
 
 <script>
+
 export default {
   methods: {
     // 退出登录
     logout() {
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      //清除token
+      this.$store.commit('user/removeToken')
+      //跳转登录页
+      // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      this.$router.push(`/login`)
     }
   }
 }
