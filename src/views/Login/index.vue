@@ -34,8 +34,6 @@ export default {
         username: '',
         password: 'Hmzs%001',
         remember: ''   
-
-        
       },
       rules: {
         username: [
