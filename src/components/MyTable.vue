@@ -1,15 +1,19 @@
 <template>
     <div class="table">
         <el-table 
-        :data="cardList" 
-        style="width: 100%">
+        style="width: 100%"
+        :data="datalist" 
+        v-bind="$attrs"
+        v-on="$listeners"
+        >
+
         <!-- 选择框 -->
         <el-table-column
          v-if="selectType"
-      type="selection"
-      width="75">
-    </el-table-column>
-     <!-- 序号 -->
+         type="selection"
+         width="75">
+        </el-table-column>
+      <!-- 序号 -->
         <el-table-column
         v-if="typeIndex"
           label="序号"
@@ -23,13 +27,15 @@
           :prop="column.dataIndex"
           >
         <template #default="{ row }">
-            <slot :name="column.dataIndex">
+            <slot :name="column.dataIndex" :row="row">
+                
               <template v-if="column.fun">
                <el-button 
                v-for="(btn, ind) in column.fun" 
                :key="ind"
                :type="btn.type"
-               size="mini">
+               size="mini"
+               @click="handleFn(btn,row)">
                 {{ btn.btnName }}
                </el-button>
               </template>
@@ -42,6 +48,17 @@
 
         </el-table-column>
         </el-table>
+
+           <!-- 分页 -->
+    <!-- <div class="card-pag">
+      <el-pagination 
+      @size-change="handleSizeChange" 
+      @current-change="handleCurrentChange" 
+      :page-size="100"
+      layout="total, prev, pager, next" 
+      >
+      </el-pagination>
+    </div> -->
     </div>
 </template>
 
@@ -52,7 +69,7 @@ export default {
             type: [Array],
             default: () => []
         },
-        cardList: {
+        datalist: {
             type: [Array],
             default: () => []
         },
@@ -63,7 +80,34 @@ export default {
         selectType:{
             type:Boolean,
             default:false
+        },
+        total:{
+            type:Number,
+            default:0
         }
+    },
+    methods:{
+        // handleSelectionChange(val){
+        //     console.log(val,'556');
+        // },
+        // handleFn(btn,row){
+        //    console.log(btn,row,'555');
+        // //    switch (btn.iconName) {
+        // //     case 'xf':
+        // //         this.$emit('handleXf',row)
+        // //         break;
+        // //     case 'show':
+        // //         this.$emit('handleShow',row)
+        // //         break;
+        // //     case 'edit':
+        // //         this.$emit('handleEdit',row)
+        // //         break;
+        // //     case 'del':
+        // //         this.$emit('handleDel',row)
+        // //         break;
+        // //    }
+
+        // }
     }
 };
 </script>

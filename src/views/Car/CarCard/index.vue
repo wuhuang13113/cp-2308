@@ -1,22 +1,25 @@
 <template>
   <div class="card-container">
-    <!-- 查询 -->
-    <el-form :inline="true" :model="formInline" class="demo-form-inline">
+     <!-- 查询 -->
+    <el-form :inline="true" :model="params" class="demo-form-inline">
       <el-form-item label="车牌号码">
-        <el-input v-model="formInline.user" placeholder="请输入内容"></el-input>
+        <el-input v-model="params.carNumber" placeholder="请输入内容"></el-input>
       </el-form-item>
       <el-form-item label="车主姓名">
-        <el-input v-model="formInline.user" placeholder="请输入内容"></el-input>
+        <el-input v-model="params.personName" placeholder="请输入内容"></el-input>
       </el-form-item>
       <el-form-item label="状态">
-        <el-select v-model="formInline.region" placeholder="状态">
-          <el-option label="全部" value=""></el-option>
-          <el-option label="可用" value="0"></el-option>
-          <el-option label="已过期" value="1"></el-option>
+        <el-select v-model="params.cardStatus" placeholder="状态">
+          <el-option 
+          v-for="(item, index) in cardStatusList" 
+          :key="item.id"
+          :value="item.id"
+          :label="item.name"/>
+         
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">查询</el-button>
+        <el-button type="primary" @click="doSearch">查询</el-button>
       </el-form-item>
     </el-form>
 
@@ -27,10 +30,17 @@
 
     <!-- 表格 -->
     <my-table 
-    :cardList="cardList"
+    :datalist="cardList"
     :columns="tableColumns" 
-    :type-index=true
-    ></my-table>
+    :type-index="true"
+    :select-type="true"
+    @handleEvent="handleFn"
+    @selection-change="handleSelectionChange"
+    >
+    <template #cardStatus="{ row }">
+        {{ formatStatus(row) }}
+    </template>
+  </my-table>
 
 
     <!-- <el-table :data="cardList" style="width: 100%">
@@ -62,8 +72,12 @@
 
     <!-- 分页 -->
     <div class="card-pag">
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="100"
-        layout="total, prev, pager, next" :total="total">
+      <el-pagination 
+      @size-change="handleSizeChange" 
+      @current-change="handleCurrentChange" 
+      :page-size="100"
+      layout="total, prev, pager, next" 
+      :total="total">
       </el-pagination>
     </div>
   </div>
@@ -82,11 +96,9 @@ export default {
       params: {
         page: '1',
         pageSize: '10',
-      },
-      //搜索框值
-      formInline: {
-        user: '',
-        region: ''
+        carNumber: null,//车辆号码
+        personName: null,//车主姓名
+        cardStatus: null //车辆状态
       },
       //表格数据
       tableColumns: [
@@ -99,30 +111,51 @@ export default {
         {
           title: '操作',
           dataIndex: 'do',
-          watch:300,
+          watch:350,
           fun: [
-            { iconName: 'edit', btnName: '续费', type: 'text' },
-            { iconName: 'edit', btnName: '查看', type: 'text' },
+            { iconName: 'xf', btnName: '续费', type: 'text' },
+            { iconName: 'show', btnName: '查看', type: 'text' },
             { iconName: 'edit', btnName: '编辑', type: 'text' },
-            { iconName: 'edit', btnName: '删除', type: 'text' }
+            { iconName: 'del', btnName: '删除', type: 'text' }
           ]
         }
       ],
       cardList:[],
       //总条数
-      total: 0
+      total: 0,
+      // 月卡状态
+      cardStatusList: [
+        {
+          id: null,
+          name: '全部'
+        },
+        {
+          id: 0,
+          name: '可用'
+        },
+        {
+          id: 1,
+          name: '已过期'
+        }
+      ]
     };
   },
   mounted() {
-    getCardListAPI(this.params).then(res => {
-      console.log(res);
-      this.cardList = res.data.rows
-      this.total = res.data.total
-    })
+    this.getCardList()
   },
   methods: {
-    onSubmit() {
-      console.log('submit!');
+    handleSelectionChange(val){
+            console.log(val,'556');
+        },
+        handleFn(btn,row){
+           console.log(btn,row,'555');
+        },
+    //方法
+    doSearch() {
+      // console.log('submit!');
+      //调用接口之前把页数重置为1
+      this.params.page = 1;
+      this.getCardList();
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
@@ -130,6 +163,14 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
     },
+    async getCardList(){
+      const res= await getCardListAPI(this.params)
+      console.log(res);
+      this.cardList = res.data.rows
+      this.total = res.data.total
+    },
+ 
+    //格式化状态
     formatStatus(row) {
       const MAP = {
         0: '可用',
@@ -138,10 +179,17 @@ export default {
       return MAP[row.cardStatus]
     }
   },
-  computed: {},
-  filters: {},
-  watch: {
-  }
+//   computed: {
+//  //格式化状态
+//  formatStatus(row) {
+//       const MAP = {
+//         0: '可用',
+//         1: '已过期'
+//       }
+//       return MAP[row.cardStatus]
+//     }
+    
+//   },
 };
 </script>
 
@@ -150,3 +198,5 @@ export default {
   float: right;
 }
 </style>
+
+
